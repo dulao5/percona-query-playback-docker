@@ -16,15 +16,11 @@ RUN yum update -y && \
 RUN yum install -y make \
     && yum clean all
 
-# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy the source code into the container
-COPY . .
+RUN git clone https://github.com/Percona-Lab/query-playback.git && \
+    cd query-playback && \
+    mkdir -p build_dir && cd build_dir && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo .. && make && \
+    cd build_dir && make install
 
-# Run cmake and make to build the project
-RUN mkdir -p build_dir && cd build_dir && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo .. && make
-RUN cd build_dir && make install
-
-# Define the entrypoint if needed (optional)
 ENTRYPOINT ["percona-playback"]
